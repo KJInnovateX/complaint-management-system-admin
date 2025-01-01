@@ -220,7 +220,7 @@
 
         // Fetch Product Details
         async function fetchProductDetails() {
-            const response = await fetch(`http://localhost:3001/api/product/${productId}`);
+            const response = await fetch(`/api/product/${productId}`);
             const data = await response.json();
 
             // Update product details section dynamically
@@ -260,7 +260,7 @@
 
         // Fetch Complaints Statistics
         async function fetchComplaintStats() {
-            fetch(`http://localhost:3001/api/complaints/${productId}`)
+            fetch(`/api/complaints/${productId}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Complaints Stats:', data);
@@ -281,7 +281,7 @@
         async function fetchComplaints() {
             try {
                 // Fetch complaints from the API
-                const response = await fetch(`http://localhost:3001/api/get-complaints/${productId}`);
+                const response = await fetch(`/api/get-complaints/${productId}`);
                 const complaints = await response.json();
 
                 // Store complaints globally for filtering
