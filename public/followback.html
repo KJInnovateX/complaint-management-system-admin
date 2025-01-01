@@ -274,7 +274,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3001/api/complaint-details/${complaintId}`);
+                const response = await fetch(`/api/complaint-details/${complaintId}`);
                 const data = await response.json();
 
                 if (response.ok) {
@@ -392,7 +392,7 @@
 
             try {
                 // Send the data to the backend
-                const response = await fetch('http://localhost:3001/api/add-followback', {
+                const response = await fetch('/api/add-followback', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -426,7 +426,7 @@
             }
 
             try {
-                const response = await fetch('http://localhost:3001/api/resolve-complaint', {
+                const response = await fetch('/api/resolve-complaint', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
