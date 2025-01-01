@@ -1,0 +1,432 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .product-card {
+            transition: all 0.5s;
+            width: 100%;
+        }
+
+        .product-card:hover {
+            border-color: black;
+            transform: scale(1.05);
+        }
+
+        .product-card:active {
+            transform: scale(0.95) rotate(1.7deg);
+        }
+
+        .highlight {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight.not-solved {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: red;
+        }
+
+        .highlight.solved {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: green;
+        }
+
+        .highlight-card {
+            animation: highlight 1s infinite alternate;
+        }
+
+        @keyframes highlight {
+            0% {
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(255, 0, 0, 1);
+            }
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .popup.active {
+            display: block;
+            animation: popup 0.5s ease-out;
+        }
+
+        @keyframes popup {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+
+        .icon-button {
+            position: relative;
+            display: inline-block;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .icon-button:hover {
+            background-color: #e5e7eb;
+            transform: scale(1.1);
+        }
+
+        .icon-button:active {
+            transform: scale(0.9);
+        }
+
+        .icon-button i {
+            font-size: 1.5rem;
+            color: #4b5563;
+        }
+
+        .welcome-text {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textAnimation 3s ease-in-out infinite;
+        }
+
+        @keyframes textAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <!-- Navbar -->
+    <div class="w-full flex justify-between items-center p-4 bg-white shadow-md">
+        <div class="welcome-text">Welcome to Admin Dashboard</div>
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <!-- Notification Button -->
+                <button class="icon-button relative" onclick="toggleMenu('notification-menu')">
+                    <i class="fas fa-bell text-xl text-gray-600"></i>
+                    <span class="absolute top-0 right-0 inline-block w-3 h-3 bg-red-500 rounded-full"></span>
+                    <span id="notification-dot"
+                        class="absolute top-0 right-0 inline-block w-3 h-3 bg-red-500 rounded-full hidden">
+                    </span>
+                </button>
+
+                <!-- Notification Menu -->
+                <div class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl hidden z-10"
+                    id="notification-menu">
+                    <!-- Header -->
+                    <div class="py-3 px-4 border-b">
+                        <p class="font-semibold text-gray-700">Notifications</p>
+                    </div>
+
+                    <!-- Notification List -->
+                    <ul class="max-h-64 overflow-auto">
+                        <li class="border-b">
+                            <div class="flex justify-between px-4 py-3 hover:bg-gray-100">
+                                <div>
+                                    <p class="font-medium text-gray-700">Product 1</p>
+                                    <p class="text-sm text-gray-600">Complaint: Delivery delay</p>
+                                </div>
+                                <button class="text-blue-500 text-sm hover:underline"
+                                    onclick="viewNotification('product1')">
+                                    View
+                                </button>
+                            </div>
+                        </li>
+                        <li class="border-b">
+                            <div class="flex justify-between px-4 py-3 hover:bg-gray-100">
+                                <div>
+                                    <p class="font-medium text-gray-700">Product 2</p>
+                                    <p class="text-sm text-gray-600">Complaint: Damaged item</p>
+                                </div>
+                                <button class="text-blue-500 text-sm hover:underline"
+                                    onclick="viewNotification('product2')">
+                                    View
+                                </button>
+                            </div>
+                        </li>
+                        <li class="border-b">
+                            <div class="flex justify-between px-4 py-3 hover:bg-gray-100">
+                                <div>
+                                    <p class="font-medium text-gray-700">Product 3</p>
+                                    <p class="text-sm text-gray-600">Complaint: Wrong product sent</p>
+                                </div>
+                                <button class="text-blue-500 text-sm hover:underline"
+                                    onclick="viewNotification('product3')">
+                                    View
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Footer -->
+
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="relative">
+                <!-- Profile Button -->
+                <button class="icon-button flex items-center space-x-2" onclick="toggleMenu('profile-menu')">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2Fprofile_user.jpg?alt=media&token=259b8271-6dca-4ae1-bf8a-747109187050"
+                        alt="Profile Picture" class="w-10 h-10 rounded-full " />
+
+                </button>
+
+                <!-- Profile Menu -->
+
+                <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl hidden z-10" id="profile-menu">
+                    <!-- Header -->
+
+                    <div class="py-3 px-4 border-b">
+                        <p class="font-medium text-gray-800">Karan Jadhav</p>
+                        <p class="text-sm text-gray-500">karanjadhav3526@gmail.com</p>
+                    </div>
+
+                    <!-- Menu Items -->
+                    <ul>
+                        <li>
+                            <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user-circle mr-2"></i> Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i> Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="w-full max-w-7xl p-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Open Complaints -->
+            <div
+                class="bg-white p-8 rounded-lg shadow-lg transform transition duration-500 hover:scale-105 flex flex-col items-center">
+                <i
+                    class="fas fa-exclamation-circle text-blue-600 text-5xl mb-4 animate__animated animate__bounceIn"></i>
+                <h2 class="text-xl font-semibold mb-4 text-blue-600">Open Complaints</h2>
+                <div class="text-4xl font-bold text-blue-600 mb-4" id="open-complaints">Loading...</div>
+            </div>
+            <!-- In Progress Complaints -->
+            <div
+                class="bg-white p-8 rounded-lg shadow-lg transform transition duration-500 hover:scale-105 flex flex-col items-center">
+                <i class="fas fa-spinner text-yellow-600 text-5xl mb-4 animate__animated animate__rotateIn"></i>
+                <h2 class="text-xl font-semibold mb-4 text-yellow-600">In Progress Complaints</h2>
+                <div class="text-4xl font-bold text-yellow-600 mb-4" id="in-progress-complaints">Loading...</div>
+            </div>
+            <!-- Resolved Complaints -->
+            <div
+                class="bg-white p-8 rounded-lg shadow-lg transform transition duration-500 hover:scale-105 flex flex-col items-center">
+                <i class="fas fa-check-circle text-green-600 text-5xl mb-4 animate__animated animate__zoomIn"></i>
+                <h2 class="text-xl font-semibold mb-4 text-green-600">Resolved Complaints</h2>
+                <div class="text-4xl font-bold text-green-600 mb-4" id="resolved-complaints">Loading...</div>
+            </div>
+        </div>
+        <!-- Product Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8" id="products-section">
+            <!-- Product Cards will be populated here -->
+        </div>
+    </div>
+</body>
+<script>
+    function toggleMenu(menuId) {
+        const menu = document.getElementById(menuId);
+        menu.classList.toggle('hidden'); // Show or hide the menu
+    }
+    function viewNotification(productId) {
+        alert(`Viewing notification for ${productId}`);
+        // Add actual logic here, such as navigating to a detailed page or opening a modal
+    }
+    // Example notifications array
+    const notifications = [
+        { id: 1, product: "Product 1", message: "Complaint: Delivery delay" },
+        { id: 2, product: "Product 2", message: "Complaint: Damaged item" },
+    ];
+
+    // Initialize notifications
+    function loadNotifications() {
+        const notificationDot = document.getElementById('notification-dot');
+        const notificationList = document.getElementById('notification-list');
+
+        // Check if there are notifications
+        if (notifications.length > 0) {
+            notificationDot.classList.remove('hidden'); // Show the red dot
+        } else {
+            notificationDot.classList.add('hidden'); // Hide the red dot
+        }
+
+        // Populate notification menu
+        notificationList.innerHTML = ''; // Clear existing notifications
+        notifications.forEach((notification) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('border-b');
+            listItem.innerHTML = `
+            <div class="flex justify-between px-4 py-3 hover:bg-gray-100">
+                <div>
+                    <p class="font-medium text-gray-700">${notification.product}</p>
+                    <p class="text-sm text-gray-600">${notification.message}</p>
+                </div>
+                <button 
+                    class="text-blue-500 text-sm hover:underline" 
+                    onclick="viewNotification(${notification.id})">
+                    View
+                </button>
+            </div>
+        `;
+            notificationList.appendChild(listItem);
+        });
+    }
+
+    // View notification
+    function viewNotification(notificationId) {
+        alert(`Viewing notification ID: ${notificationId}`);
+        // Add actual logic here for opening a detailed view or modal
+    }
+
+    // Toggle menu visibility
+    function toggleMenu(menuId) {
+        const menu = document.getElementById(menuId);
+        menu.classList.toggle('hidden'); // Show or hide the menu
+    }
+
+    // Load notifications on page load
+    document.addEventListener('DOMContentLoaded', loadNotifications);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Fetch product data along with solved and not solved counts
+        fetch('http://localhost:3001/api/products')
+            .then((response) => response.json())
+            .then((data) => {
+                const productsSection = document.getElementById('products-section');
+                data.forEach((product) => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('bg-white', 'p-6', 'rounded-lg', 'shadow-lg', 'cursor-pointer');
+
+                    // Create an <img> element to display the product image
+                    const productImage = document.createElement('img');
+                    productImage.src = product.link; // Image URL from the product data
+                    productImage.alt = product.product_name; // Alt text for the image
+                    productImage.classList.add('w-full', 'h-auto', 'rounded-lg', 'mb-4'); // Add some styling
+                    productCard.appendChild(productImage);
+
+                    productImage.onclick = function () {
+                        window.location.href = `productInfo.html?productId=${product.product_identifier}`;
+                    };
+
+                    // Create a link to the product page
+                    const productLink = document.createElement('a');
+                    productLink.href = product.link; // Product link
+                    productLink.classList.add('text-blue-600', 'text-xl', 'font-semibold', 'block', 'mb-4');
+                    productLink.textContent = product.product_name;
+                    productCard.appendChild(productLink);
+
+
+
+                    // Create the solved and not solved counts
+                    const solved = document.createElement('div');
+                    solved.classList.add('highlight', 'solved');
+                    solved.innerHTML = `<span>Solved</span><span>${product.solved}</span>`;
+                    productCard.appendChild(solved);
+
+                    const notSolved = document.createElement('div');
+                    notSolved.classList.add('highlight', 'not-solved');
+                    notSolved.innerHTML = `<span>Not Solved</span><span>${product.not_solved}</span>`;
+                    productCard.appendChild(notSolved);
+
+                    productsSection.appendChild(productCard);
+                });
+            })
+            .catch((error) => console.error('Error fetching products data:', error));
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('http://localhost:3001/api/complaints-stats')
+            .then(response => response.json())
+            .then(data => {
+                // Set the counts in the respective elements
+                document.getElementById('open-complaints').textContent = data.open_complaints;
+                document.getElementById('in-progress-complaints').textContent = data.in_progress_complaints;
+                document.getElementById('resolved-complaints').textContent = data.resolved_complaints;
+            })
+            .catch(error => {
+                console.error('Error fetching complaint data:', error);
+            });
+    });
+
+</script>
+
+</html>

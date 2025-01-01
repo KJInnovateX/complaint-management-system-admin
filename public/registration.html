@@ -1,0 +1,152 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="text-center mb-6">
+        <img alt="Company Logo" class="h-16 w-16 mx-auto rounded-full shadow-lg" height="64"
+            src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2FWhatsApp%20Image%202024-12-22%20at%2012.09.39_51027079%20(1).jpg?alt=media&amp;token=6354ff03-99c8-493d-9a29-f20ea5fc8432"
+            width="64" />
+        <h1 class="text-2xl font-bold text-gray-700 mt-4">
+            Mask Polymer Pvt. Ltd
+        </h1>
+    </div>
+    <div class="w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-hidden">
+        <div class="flex flex-col md:flex-row">
+            <div class="md:w-1/2 p-8 flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-200">
+                <img alt="Illustration of a computer screen with a user icon and a shield icon"
+                    class="w-full h-auto rounded-lg shadow-lg" height="300"
+                    src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2FWhatsApp%20Image%202025-01-01%20at%2012.25.54_4a1be763.jpg?alt=media&amp;token=6a1715c2-abad-44d1-99f5-84b97cc7202f"
+                    width="400" />
+            </div>
+            <div class="md:w-1/2 p-8">
+                <div class="flex justify-start mb-4">
+                    <div class="w-16 h-1 bg-blue-600"></div>
+                </div>
+                <h2 class="text-3xl font-semibold text-gray-700 mb-6">
+                    Create Account as Admin
+                </h2>
+                <form>
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input
+                                class="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                id="email" placeholder="Email" type="email" />
+                            <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input
+                                class="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                id="company-id" placeholder="Company ID" type="text" />
+                            <i class="fas fa-id-badge absolute right-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <div class="relative">
+                            <input
+                                class="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                id="password" placeholder="Password" type="password" />
+                            <i class="fas fa-lock absolute right-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full bg-blue-600 text-white py-3 rounded-full hover:bg-blue-700 transition duration-300"
+                        type="submit">CREATE ACCOUNT</button>
+                </form>
+                <div class="flex justify-center items-center mt-4">
+                    <a class="text-sm text-blue-600 hover:underline" href="index.html">Back to Login</a>
+                </div>
+                <div id="message"
+                    class="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-center hidden">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    document.querySelector('form').addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent form's default submission behavior
+
+        const messageDiv = document.getElementById('message');
+        const email = document.getElementById('email').value;
+        const companyId = document.getElementById('company-id').value;
+        const password = document.getElementById('password').value;
+
+        if (!email || !companyId || !password) {
+            // Show error if fields are missing
+            showMessage('All fields are required.', 'error');
+            return;
+        }
+
+        try {
+            // Make the POST request
+            const response = await fetch('http://localhost:3001/api/admin/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, company_id: companyId, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.status === 201) {
+                // Success message
+                showMessage('Admin account created successfully!, Redirecting to Login...', 'success');
+                document.querySelector('form').reset(); // Reset form after successful submission
+                setTimeout(() => {
+                    window.location.href="index.html";
+                }, 3000);
+
+            } else {
+                // Error message
+                showMessage(result.message || 'Failed to create account. Try again.', 'error');
+            }
+        } catch (error) {
+            // Handle network or server errors
+            showMessage('An error occurred. Please try again later.', 'error');
+        }
+    });
+
+    // Function to display success or error messages
+    function showMessage(message, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = message;
+
+        if (type === 'success') {
+            messageDiv.className =
+                'fixed bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-center bg-green-500 text-white';
+        } else if (type === 'error') {
+            messageDiv.className =
+                'fixed bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-center bg-red-500 text-white';
+        }
+
+        // Show the message
+        messageDiv.classList.remove('hidden');
+
+        // Hide the message after 5 seconds
+        setTimeout(() => {
+            messageDiv.classList.add('hidden');
+        }, 3000);
+    }
+
+</script>
+
+</html>
