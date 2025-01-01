@@ -368,7 +368,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         // Fetch product data along with solved and not solved counts
-        fetch('http://localhost:3001/api/products')
+        fetch('/api/products')
             .then((response) => response.json())
             .then((data) => {
                 const productsSection = document.getElementById('products-section');
@@ -414,7 +414,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        fetch('http://localhost:3001/api/complaints-stats')
+        fetch('/api/complaints-stats')
             .then(response => response.json())
             .then(data => {
                 // Set the counts in the respective elements
